@@ -26,6 +26,7 @@ namespace Acme.BookStore.Application.Admin
             return "Ok";
         }
       
+       [Authorize(Policy = "COI.Approve")]
         public async Task<string> IsEcOfficerAsync()
         {
             if(await AuthorizationService.IsGrantedAsync(BookStorePermissions.CoiApprove))
