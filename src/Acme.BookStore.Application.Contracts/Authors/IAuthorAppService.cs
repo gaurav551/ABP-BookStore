@@ -9,7 +9,7 @@ namespace Acme.BookStore.Authors
     {
         Task<AuthorDto> GetAsync(Guid id);
 
-        Task<PagedResultDto<AuthorDto>> GetListAsync(GetAuthorListDto input);
+        Task<object> GetListAsync(GetAuthorListDto input);
 
         Task<AuthorDto> CreateAsync(CreateAuthorDto input);
 

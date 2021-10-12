@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +17,9 @@ namespace Acme.BookStore.EntityFrameworkCore
             var configuration = BuildConfiguration();
 
             var builder = new DbContextOptionsBuilder<BookStoreDbContext>()
-                .UseSqlServer(configuration.GetConnectionString("Default"));
+            .UseMySql(
+        configuration.GetConnectionString("Default"),
+        new MySqlServerVersion(new Version(8, 0, 21)));
 
             return new BookStoreDbContext(builder.Options);
         }

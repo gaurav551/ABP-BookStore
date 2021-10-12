@@ -6,6 +6,8 @@ using Acme.BookStore.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Application.Services;
+using Volo.Abp.PermissionManagement;
 
 namespace Acme.BookStore.Authors
 {
@@ -14,13 +16,21 @@ namespace Acme.BookStore.Authors
     {
         private readonly IAuthorRepository _authorRepository;
         private readonly AuthorManager _authorManager;
+        private readonly IPermissionManager _permissionManager;
+        private readonly IPermissionGrantRepository _permissionRepo;
+
+
 
         public AuthorAppService(
             IAuthorRepository authorRepository,
-            AuthorManager authorManager)
+            AuthorManager authorManager,
+            IPermissionManager permissionManager,
+            IPermissionGrantRepository permissionRepo)
         {
             _authorRepository = authorRepository;
             _authorManager = authorManager;
+             _permissionManager = permissionManager;
+             _permissionRepo = permissionRepo;
         }
 
         //[Authorize(BookStorePermissions.Authors.Create)]
@@ -61,11 +71,15 @@ namespace Acme.BookStore.Authors
             
             return ObjectMapper.Map<Author, AuthorDto>(author);
         }
-
-      
-
-        public async Task<PagedResultDto<AuthorDto>> GetListAsync(GetAuthorListDto input)
-        {
+        [Authorize(Roles ="Admin")]
+        public async Task<object> GetListAsync(GetAuthorListDto input)
+        {  
+           // await _permissionManager.SetForRoleAsync("Admin",BookStorePermissions.Authors.Default,true);
+            if(await AuthorizationService.IsGrantedAsync(BookStorePermissions.Authors.Default))
+            {
+                return "GRANTED";
+            }
+          
             if (input.Sorting.IsNullOrWhiteSpace())
             {
                 input.Sorting = nameof(Author.Name);
@@ -88,6 +102,7 @@ namespace Acme.BookStore.Authors
                 ObjectMapper.Map<List<Author>, List<AuthorDto>>(authors)
             );
         }
+     
 
         [Authorize(BookStorePermissions.Authors.Edit)]
         public async Task UpdateAsync(Guid id, UpdateAuthorDto input)

@@ -26,6 +26,8 @@ namespace Acme.BookStore.Permissions
 
             authorsPermission.AddChild(
                 BookStorePermissions.Authors.Delete, L("Permission:Authors.Delete"));
+     
+            var coiApprove = bookStoreGroup.AddPermission("COI.Approve", L("Permission:Some"));
         }
 
         private static LocalizableString L(string name)
